@@ -6,6 +6,9 @@ import pyotp
 import qrcode
 
 from flask import Flask, send_file
+
+from config import response
+from config import StatusCode
 app = Flask(__name__)
 
 @app.route('/')
@@ -20,9 +23,18 @@ def auth_otp(otp):
         if not totp.verify(otp):
             print("Invalid OTP")
             # 返回错误加密代码
-            return generate_encryption_code()
+            response['success'] = False
+            response['code'] = StatusCode.WRONG_OTP.value
+            response['message'] = 'Invalid OTP'
+            response['data']['cryption_code'] = generate_cryption_code()
+            response['data']['is_otp_correct'] = False
+            return response
         # 返回正确加密代码
-        return get_code()
+        response['code'] = StatusCode.OK.value
+        response['message'] = 'Correct OTP'
+        response['data']['cryption_code'] = get_cryption_code()
+        response['data']['is_otp_correct'] = True
+        return response
     else:
         print("OTP doesn't exist")
         return generate_otp_and_code()
@@ -31,7 +43,7 @@ def get_secret():
     with open("totp_secret.txt", "r") as f:
         return f.read()
 
-def get_code():
+def get_cryption_code():
     with open("encryption_code.txt", "r") as f:
         return f.read()
 
@@ -44,7 +56,7 @@ def have_otp():
 def generate_otp_secret():
     return pyotp.random_base32()
 
-def generate_encryption_code():
+def generate_cryption_code():
     return str(random.randint(100000,999999))
 
 # 根据secret制作qrcode
@@ -65,7 +77,7 @@ def make_qrcode(secret):
 def generate_otp_and_code():
     try:
         secret = generate_otp_secret()
-        encryption_code = generate_encryption_code()
+        encryption_code = generate_cryption_code()
 
         # 写入文件
         with open("totp_secret.txt", "w") as f:
@@ -93,3 +105,6 @@ def generate_otp_and_code():
         )
     except Exception as e:
         return f"生成二维码时发生错误：{e}", 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

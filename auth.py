@@ -46,15 +46,17 @@ def get_master_settings(master_password, otp_secret):
     return row
 
 # 验证OTP
-def authenticate_otp(otp):
-    url = config.OTP_AUTH_URL + '/auth_otp/' + otp
+def authenticate_otp(otp:str):
+    url = config.OTP_AUTH_URL + '/auth_otp/' + str(otp)
     response = requests.get(url)
 
     if response.status_code == 200:
         print("Authentication successful!")
-        return response.text
+        return response.json()
     else:
         print("Invalid OTP")
         return None
 
-
+# # 验证主密码
+# def authenticate_master_password():
+#

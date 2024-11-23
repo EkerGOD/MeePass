@@ -11,14 +11,13 @@
 ## 数据表
 passwords
 
-| columns             | descriptions |
-|---------------------|--------------|
-| id                  | 唯一标识符        |
-| account             | 账户名          |
-| encryption_password | 加密密码         |
-| encryption_salt     | 加密盐          |
-| group_id            | 对应的group_id  | 
-| notes               | 备注           |
+| columns  | descriptions |
+|----------|--------------|
+| id       | 唯一标识符        |
+| account  | 账户名          |
+| password | 加密密码         |
+| group_id | 对应的group_id  | 
+| notes    | 备注           |
 groups
 
 | columns   | descriptions |
