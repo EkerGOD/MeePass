@@ -1,49 +1,16 @@
 """
 验证代码
 """
+import base64
 import sqlite3
 
 import pyotp
 import requests
 
 import config
+from crypt import derive_key
+from db import get_master_password
 
-
-def authenticate_master_password(master_password, stored_password, otp_secret):
-    # 验证主密码
-    if master_password != stored_password:
-        print("Invalid master password")
-        return False
-
-    otp = input("Enter your OTP: ")
-    totp = pyotp.TOTP(otp_secret)
-    if not totp.verify(otp):
-        print("Invalid OTP")
-        return False
-
-    print("Authentication successful!")
-    return True
-
-# 设置主密码和OTP
-def setup_master_password():
-    master_password = input("Set your master password:")
-
-    conn = sqlite3.connect('mee_pass.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO settings (master_password, otp_secret) VALUES (?, ?)',
-                   (master_password))
-    conn.commit()
-    conn.close()
-
-# 获取主密码和OTP密钥
-def get_master_settings(master_password, otp_secret):
-    conn = sqlite3.connect('mee_pass.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT master_password, otp_secret FROM settings VALUES (?, ?) LIMIT 1',
-                   (master_password, otp_secret))
-    row = cursor.fetchone()
-    conn.close()
-    return row
 
 # 验证OTP
 def authenticate_otp(otp:str):
@@ -51,12 +18,17 @@ def authenticate_otp(otp:str):
     response = requests.get(url)
 
     if response.status_code == 200:
-        print("Authentication successful!")
         return response.json()
     else:
-        print("Invalid OTP")
         return None
 
-# # 验证主密码
-# def authenticate_master_password():
-#
+# 验证主密码
+def authenticate_master_password(db_path, master_password):
+    stored_key = get_master_password(db_path)
+    salt , stored_hashed_password = stored_key.split(':')
+    key = derive_key(master_password, base64.b64decode(salt))
+    derived_hashed_password = base64.b64encode(key).decode()
+    if derived_hashed_password == stored_hashed_password:
+        return True
+    else:
+        return False

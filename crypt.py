@@ -9,15 +9,15 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 # 生成加密密钥
-def derive_key(master_password, cryption_code, salt):
+def derive_key(value, salt, length=32, iterations=100000):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
-        length=32,
+        length=length,
         salt=salt,
-        iterations=100000,
+        iterations=iterations,
         backend=default_backend()
     )
-    return kdf.derive((master_password + cryption_code).encode())
+    return kdf.derive((value).encode())
 
 
 # AES 加密
@@ -25,7 +25,9 @@ def aes_encryption(value ,key):
     iv = os.urandom(16)
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
-    padded_data = padding.PKCS7(128).padder().update(value.encode()) + padding.PKCS7(128).padder().finalize()
+    padder = padding.PKCS7(128).padder()
+    print(value)
+    padded_data = padder.update(value.encode()) + padder.finalize()
     encrypted = encryptor.update(padded_data) + encryptor.finalize()
     encrypted_data = base64.b64encode(iv + encrypted).decode()
     return encrypted_data
@@ -46,5 +48,6 @@ def aes_decryption(value, key):
     decrypted = decryptor.update(ciphertext) + decryptor.finalize()
 
     # 去除填充并返回原始密码
-    unpadded = padding.PKCS7(128).unpadder().update(decrypted) + padding.PKCS7(128).unpadder().finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    unpadded = unpadder.update(decrypted) + unpadder.finalize()
     return unpadded.decode()
