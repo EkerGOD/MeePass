@@ -7,11 +7,20 @@
 # 目录结构描述
     MeePass/                // 项目主目录
     ├── database            // 存放密码数据库 
+    ├── favicon             // 项目图标
     ├── MeePass_Backend/    // 后台OTP及未来密码备份服务后台文件
     │   ├── config.py       // 后台配置文件
     │   ├── response.py     // response类及相关枚举类
     │   └── TOTP.py         // 后端主代码，目前主要用作TOTP一次性密码验证
     ├── tests               // 测试文件存放
+    ├── ui/                 // PyQt界面文件
+    │   ├── dynamic         // 针对ui界面生成代码添加功能
+    │   ├── static          // ui文件生成代码，不作任何修改
+    │   ├── controller.py   // 用于各个页面之间交互
+    │   └── main_ui.py      // ui主入口
+    ├── utils/              // 工具文件夹
+    │   ├── file.py         // 文件相关工具
+    │   └── password.py     // 密码相关工具
     ├── .gitignore          // git忽略文件
     ├── auth.py             // 验证代码
     ├── config.py           // 配置文件
@@ -35,6 +44,11 @@
 
     3. 实现TOTP一次性密码加密
 
+##### v0.1.1:
+    1. 编写基本gui页面
+
+    2. 完成密码熵检测
+
 ## 流程
 1. 打开gui
 2. 创建密码库
@@ -55,6 +69,7 @@ passwords
 | password | 加密密码         |
 | group_id | 对应的group_id  | 
 | notes    | 备注           |
+
 groups
 
 | columns   | descriptions |
@@ -65,6 +80,9 @@ groups
 
 ## 更新路径
 - [ ] 完成gui页面
+  - [ ] 完成打开数据库页面
+  - [ ] 完成操作数据库页面
+  - [ ] 完成创建主密码页面
 - [ ] 云同步数据库
 - [ ] 文件密码
 - [ ] 自动填充
@@ -76,3 +94,4 @@ groups
 - [x] 文件配置规范 //2024.11.23
 - [x] 规范README结构 // 2024.11.23
 - [ ] otp密钥更改
+- [x] 检测密码熵

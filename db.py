@@ -55,6 +55,10 @@ def init_db(db_name, db_folder_path=config.DB_FOLDER_PATH):
         return False
     return True
 
+def init_db(db_path):
+    create_db(db_path)
+
+
 # 获取已知数据库
 def get_db(folder_path):
     dbs = [file for file in os.listdir(folder_path) if file.endswith('.db')]
@@ -85,3 +89,12 @@ def select_password(db_name, account):
     row = cursor.fetchone()
     conn.close()
     return row
+
+# 查询组
+def select_groups(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(sql.SELECT_GROUPS)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows

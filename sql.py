@@ -25,3 +25,6 @@ INSERT_PASSWORDS = '''
 SELECT_PASSWORDS = '''
         SELECT password FROM passwords WHERE account = ?
 '''
+
+SELECT_GROUPS = '''
+SELECT * FROM groups'''
