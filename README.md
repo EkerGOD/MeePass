@@ -7,11 +7,21 @@
 # 目录结构描述
     MeePass/                // 项目主目录
     ├── database            // 存放密码数据库 
+    ├── db/                 // 数据库相关操作
+    │   ├── __init__.py     // 数据库初始化
+    │   ├── group.py        // 与密码组相关代码
+    │   └── password.py     // 与密码相关代码
     ├── favicon             // 项目图标
+    ├── icon                // 图标
     ├── MeePass_Backend/    // 后台OTP及未来密码备份服务后台文件
     │   ├── config.py       // 后台配置文件
     │   ├── response.py     // response类及相关枚举类
     │   └── TOTP.py         // 后端主代码，目前主要用作TOTP一次性密码验证
+    ├── models/             // 数据库模型，采用SQLAlchemy管理
+    │   ├── __init__.py     // 包文件
+    │   ├── base.py         // 存放base类
+    │   ├── groups.py       // groups表
+    │   └── passwords.py    // passwords表
     ├── tests               // 测试文件存放
     ├── ui/                 // PyQt界面文件
     │   ├── dynamic         // 针对ui界面生成代码添加功能
@@ -23,15 +33,15 @@
     │   └── password.py     // 密码相关工具
     ├── .gitignore          // git忽略文件
     ├── auth.py             // 验证代码
+    ├── config.ini          // 配置应用习惯数据
     ├── config.py           // 配置文件
     ├── crypt.py            // 加解密代码
-    ├── db.py               // 数据库代码
     ├── gui.py              // gui.py文件
     ├── gui.ui              // gui.ui文件
     ├── main.py             // 主入口
     ├── README.md           // 帮助文档
     ├── requirements.txt    // 依赖库文件
-    └── sql.py              // 存放sql语句
+    └── sql.py              // 存放sql语句(将废弃)
 
 
 # 使用说明
@@ -49,6 +59,13 @@
 
     2. 完成密码熵检测
 
+##### v0.1.2:
+    1. 完成密码组的增删改查
+  
+    2. 可以添加密码
+
+    3. 实现不同组储存不同密码
+
 ## 流程
 1. 打开gui
 2. 创建密码库
@@ -65,7 +82,7 @@ passwords
 | columns  | descriptions |
 |----------|--------------|
 | id       | 唯一标识符        |
-| account  | 账户名          |
+| username | 账户名          |
 | password | 加密密码         |
 | group_id | 对应的group_id  | 
 | notes    | 备注           |
@@ -76,13 +93,14 @@ groups
 |-----------|--------------|
 | id        | 唯一标识符        |
 | name      | group名称      |
+| notes     | 备注           |
 | parent_id | 父节点id        |
 
 ## 更新路径
 - [ ] 完成gui页面
-  - [ ] 完成打开数据库页面
+  - [x] 完成打开数据库页面
   - [ ] 完成操作数据库页面
-  - [ ] 完成创建主密码页面
+  - [x] 完成创建主密码页面
 - [ ] 云同步数据库
 - [ ] 文件密码
 - [ ] 自动填充
