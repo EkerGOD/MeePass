@@ -3,12 +3,14 @@ import os
 import re
 
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QMessageBox
 
+from db import create_engine_and_table
+from global_state import global_state
 from auth import authenticate_otp, authenticate_master_password
 from ui.static.open_database import Ui_Form as OpenDatabaseUI
 from utils.file import verify_dir_path
-
 
 class OpenDatabaseWindow(QtWidgets.QWidget):
 
@@ -20,9 +22,17 @@ class OpenDatabaseWindow(QtWidgets.QWidget):
         super(OpenDatabaseWindow, self).__init__()
         self.ui = OpenDatabaseUI()
         self.ui.setupUi(self)
+
+        # self.setting = QSettings("config.ini", QSettings.IniFormat)
+        # self.setting.setIniCodec("UTF-8")
         # 初始化数据
         self.database_path = ""
-
+        self.global_state = global_state
+        """
+        初始化页面
+        """
+        self.ui.databasePath_lineEdit.setText(self.global_state.get_config("General", "database_path", ""))
+        # print("get database path")
         # 点击连接函数
         # ok按钮
         self.ui.OK_pushButton.clicked.connect(self.check_input)
@@ -43,6 +53,9 @@ class OpenDatabaseWindow(QtWidgets.QWidget):
             QMessageBox.critical(self, "非法数据库路径", "传入数据库路径非法，请重新输入后重试！", QMessageBox.Yes, QMessageBox.Yes)
             return
 
+        # 连接数据库
+        create_engine_and_table("sqlite:///" + self.database_path)
+
         if not master_password or not otp:
             QMessageBox.warning(self, "验证失败", "主密码和OTP不能为空！", QMessageBox.Yes, QMessageBox.Yes)
             return
@@ -57,6 +70,12 @@ class OpenDatabaseWindow(QtWidgets.QWidget):
             return
         else:
             print("验证通过")
+        """
+        全局变量赋值
+        """
+        self.global_state.set_config("General", "database_path", self.database_path)
+        self.global_state.set_temp('master_password', master_password)
+        self.global_state.set_temp('cryption_code', response['data']['cryption_code'])
 
         self.go_operate()
 
@@ -65,6 +84,9 @@ class OpenDatabaseWindow(QtWidgets.QWidget):
         fileName, fileType = QtWidgets.QFileDialog.getOpenFileName(None, "选取数据库", os.getcwd(),
                                                                    "DB Files (*.db)")
         self.ui.databasePath_lineEdit.setText(fileName)
+        # 存储database_path
+        self.global_state.set_config('General', 'database_path', fileName)
+        # print("set database path")
 
         print(fileName)
 

@@ -36,16 +36,22 @@ def aes_encryption(value ,key):
 def aes_decryption(value, key):
     # 解密密文
     encrypted_data = base64.b64decode(value)
+    print("encrypted_data", encrypted_data)
 
     # 提取iv和密文
     iv = encrypted_data[:16]
     ciphertext = encrypted_data[16:]
+
+    print("IV:", iv)
+    print("Ciphertext:", ciphertext)
 
     # 解密
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
 
     decrypted = decryptor.update(ciphertext) + decryptor.finalize()
+
+    print("Decrypted data:", decrypted)
 
     # 去除填充并返回原始密码
     unpadder = padding.PKCS7(128).unpadder()

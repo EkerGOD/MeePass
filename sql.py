@@ -18,13 +18,17 @@ CREATE_GROUPS = '''
         )
     '''
 INSERT_PASSWORDS = '''
-        INSERT INTO passwords (account, password, group_id, notes) 
-        VALUES (?, ?, ?, ?)
+        INSERT INTO passwords (title, username, password, url, notes, group_id) 
+        VALUES (?, ?, ?, ?, ?, ?)
     '''
 
 SELECT_PASSWORDS = '''
-        SELECT password FROM passwords WHERE account = ?
+        SELECT password FROM passwords WHERE username = ?
 '''
 
 SELECT_GROUPS = '''
 SELECT * FROM groups'''
+
+SELECT_PASSWORDS_BY_GROUP = '''
+SELECT title, username, password, url, notes FROM passwords WHERE group_id = ?
+'''
